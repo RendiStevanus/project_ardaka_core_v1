@@ -7,75 +7,72 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Sistem
+## 📖 About Sistem
 
-# Laravel 12 Base Project
+**Sistem Informasi Penerimaan Mahasiswa Baru (SIM PMB)**
+merupakan aplikasi berbasis web yang dikembangkan menggunakan **Laravel 12** sebagai framework utama. Sistem ini dirancang untuk mendukung pengelolaan proses administrasi dan data dalam kegiatan **Penerimaan Mahasiswa Baru (PMB)** secara terstruktur dan terintegrasi.
 
-Base Project ini merupakan template aplikasi berbasis **Laravel 12** yang dirancang sebagai fondasi untuk membangun aplikasi dengan sistem **Role-Based Access Control (RBAC)** menggunakan **Spatie Laravel Permission**, **Livewire 3**, serta pengelolaan **Master Data Program Studi**.
+Aplikasi menggunakan **Livewire 3** untuk membangun antarmuka yang interaktif serta **Spatie Laravel Permission** untuk mengimplementasikan sistem **Role-Based Access Control (RBAC)** sehingga setiap pengguna dapat diberikan hak akses sesuai dengan peran dan tanggung jawabnya.
 
-Project ini bertujuan untuk mempercepat proses pengembangan aplikasi dengan menyediakan struktur autentikasi, manajemen pengguna, hak akses, dan data master yang sudah terintegrasi.
+SIM PMB juga menyediakan modul **Master Data Program Studi** sebagai salah satu komponen dasar dalam pengelolaan data penerimaan mahasiswa baru.
 
 ## 🚀 Tech Stack
 
-- Laravel 12
-- Livewire 3
-- Spatie Laravel Permission
-- Bootstrap 5 - Mazer Template Admin
-- MySQL
+- **Laravel 12**
+- **Livewire 3**
+- **Spatie Laravel Permission**
+- **Bootstrap 5**
+- **Mazer Admin Dashboard Template**
+- **MySQL**
 
 ## ✨ Fitur
 
-### Authentication
+### 🔐 Authentication
 
 - Login
 - Logout
 - Session Authentication
+- Proteksi halaman berdasarkan autentikasi pengguna
 
-### User Management
+### 👤 User Management
 
 - CRUD User
 - Assign Role kepada User
-- Soft Delete (opsional)
+- Pengelolaan status pengguna
+- Soft Delete
 
-### Role Management
+### 🛡️ Role Management
 
 - CRUD Role
 - Assign Permission ke Role
-- Sinkronisasi Permission secara otomatis
+- Sinkronisasi Permission
+- Pengaturan hak akses berdasarkan Role
 
-### Permission Management
+### 🔑 Permission Management
 
 - CRUD Permission
-- Mendukung konsep Role-Based Access Control (RBAC)
-- Integrasi penuh dengan Spatie Laravel Permission
-
-### Master Data Program Studi
-
-- CRUD Program Studi
-- Kode Program Studi
-- Nama Program Studi
-- Jenjang
-- Akreditasi
+- Role-Based Access Control (RBAC)
+- Integrasi dengan **Spatie Laravel Permission**
+- Pembatasan akses berdasarkan Permission
 
 ## 🔐 Role & Permission
 
-Project menggunakan package **Spatie Laravel Permission** sebagai sistem otorisasi.
+SIM PMB menggunakan **Spatie Laravel Permission** sebagai sistem otorisasi untuk mengatur hak akses pengguna.
 
 ### Role
 
-Role dapat dibuat sesuai kebutuhan, misalnya:
+Role dapat disesuaikan dengan kebutuhan operasional sistem, misalnya:
 
-- Super Admin
-- Admin
-- User
+- **Super Admin** — memiliki akses penuh terhadap sistem
+- **Admin** — mengelola data dan proses PMB sesuai hak akses
+- **User** — memiliki akses terbatas sesuai Permission yang diberikan
 
 ### Permission
 
-Permission bersifat fleksibel dan dapat ditambahkan sesuai kebutuhan aplikasi.
+Permission digunakan untuk menentukan tindakan yang dapat dilakukan oleh setiap Role.
 
-Contoh permission:
+Contoh Permission:
 
-```
 read_user
 create_user
 update_user
@@ -95,40 +92,53 @@ read_program_studi
 create_program_studi
 update_program_studi
 delete_program_studi
-```
 
-Setiap Role dapat memiliki satu atau lebih Permission.
+````
+
+Setiap Role dapat memiliki satu atau lebih Permission sesuai kebutuhan.
 
 ## 📁 Struktur Modul
 
-```
-Authentication
-├── Login
+```text
+SIM PMB
+│
+├── Authentication
+│   ├── Login
+│   └── Logout
+│
+├── User Management
+│   ├── Users
+│   ├── Roles
+│   └── Permissions
+│
+└── Master Data
+    └── Program Studi
+````
 
-Master Data
-└── Program Studi
-```
+## 🎯 Tujuan Sistem
 
-User Management
-├── Users
-├── Roles
-└── Permissions
+SIM PMB dikembangkan sebagai sistem yang dapat menjadi dasar dalam pengelolaan proses **Penerimaan Mahasiswa Baru** secara digital.
 
-## 📌 Tujuan Project
+Dengan struktur sistem yang modular dan penggunaan Role & Permission, aplikasi dapat dikembangkan lebih lanjut sesuai kebutuhan institusi tanpa harus membangun ulang komponen dasar sistem.
 
-Base Project ini dibuat agar pengembang tidak perlu membangun kembali fitur-fitur dasar pada setiap project baru. Dengan struktur yang sudah tersedia, pengembangan aplikasi dapat lebih cepat, konsisten, dan mudah dikembangkan.
+## 🔮 Pengembangan Selanjutnya
 
-Project ini sangat cocok digunakan sebagai fondasi untuk:
+Sistem dapat dikembangkan dengan menambahkan berbagai modul PMB, antara lain:
 
-- Sistem Informasi Akademik
-- Sistem PMB
-- Sistem Inventaris
-- Sistem Kepegawaian
-- Sistem Manajemen Organisasi
-- Aplikasi Internal Perusahaan
-- Dashboard Administrasi
-
-## 📄 License
-
-Open Source.
-Silakan digunakan, dimodifikasi, dan dikembangkan sesuai kebutuhan.
+- Tahun Akademik
+- Jalur PMB
+- Gelombang PMB
+- Pendaftaran Calon Mahasiswa
+- Data Pribadi Calon Mahasiswa
+- Data Keluarga
+- Data Pendidikan
+- Data Dokumen
+- Pembayaran Pendaftaran
+- Seleksi PMB
+- Jadwal Ujian
+- Ruang Ujian
+- Pengumuman Hasil Seleksi
+- Registrasi Ulang
+- Generate Nomor Induk Mahasiswa (NIM)
+- Laporan PMB
+- Dashboard Statistik PMB
