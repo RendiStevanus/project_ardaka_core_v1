@@ -7,53 +7,128 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## About Sistem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Laravel 12 Base Project
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Base Project ini merupakan template aplikasi berbasis **Laravel 12** yang dirancang sebagai fondasi untuk membangun aplikasi dengan sistem **Role-Based Access Control (RBAC)** menggunakan **Spatie Laravel Permission**, **Livewire 3**, serta pengelolaan **Master Data Program Studi**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Project ini bertujuan untuk mempercepat proses pengembangan aplikasi dengan menyediakan struktur autentikasi, manajemen pengguna, hak akses, dan data master yang sudah terintegrasi.
 
-## Learning Laravel
+## 🚀 Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Laravel 12
+- Livewire 3
+- Spatie Laravel Permission
+- Bootstrap 5 - Mazer Template Admin
+- MySQL
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ✨ Fitur
 
-## Laravel Sponsors
+### Authentication
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Login
+- Logout
+- Session Authentication
 
-### Premium Partners
+### User Management
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- CRUD User
+- Assign Role kepada User
+- Soft Delete (opsional)
 
-## Contributing
+### Role Management
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- CRUD Role
+- Assign Permission ke Role
+- Sinkronisasi Permission secara otomatis
 
-## Code of Conduct
+### Permission Management
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- CRUD Permission
+- Mendukung konsep Role-Based Access Control (RBAC)
+- Integrasi penuh dengan Spatie Laravel Permission
 
-## Security Vulnerabilities
+### Master Data Program Studi
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- CRUD Program Studi
+- Kode Program Studi
+- Nama Program Studi
+- Jenjang
+- Akreditasi
 
-## License
+## 🔐 Role & Permission
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Project menggunakan package **Spatie Laravel Permission** sebagai sistem otorisasi.
+
+### Role
+
+Role dapat dibuat sesuai kebutuhan, misalnya:
+
+- Super Admin
+- Admin
+- User
+
+### Permission
+
+Permission bersifat fleksibel dan dapat ditambahkan sesuai kebutuhan aplikasi.
+
+Contoh permission:
+
+```
+read_user
+create_user
+update_user
+delete_user
+
+read_role
+create_role
+update_role
+delete_role
+
+read_permission
+create_permission
+update_permission
+delete_permission
+
+read_program_studi
+create_program_studi
+update_program_studi
+delete_program_studi
+```
+
+Setiap Role dapat memiliki satu atau lebih Permission.
+
+## 📁 Struktur Modul
+
+```
+Authentication
+├── Login
+
+Master Data
+└── Program Studi
+```
+
+User Management
+├── Users
+├── Roles
+└── Permissions
+
+## 📌 Tujuan Project
+
+Base Project ini dibuat agar pengembang tidak perlu membangun kembali fitur-fitur dasar pada setiap project baru. Dengan struktur yang sudah tersedia, pengembangan aplikasi dapat lebih cepat, konsisten, dan mudah dikembangkan.
+
+Project ini sangat cocok digunakan sebagai fondasi untuk:
+
+- Sistem Informasi Akademik
+- Sistem PMB
+- Sistem Inventaris
+- Sistem Kepegawaian
+- Sistem Manajemen Organisasi
+- Aplikasi Internal Perusahaan
+- Dashboard Administrasi
+
+## 📄 License
+
+Open Source.
+Silakan digunakan, dimodifikasi, dan dikembangkan sesuai kebutuhan.
