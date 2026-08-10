@@ -91,6 +91,10 @@ class RolePermissionSeeder extends Seeder
                 'reset_permission',
                 'export_permission',
             ])->pluck('name')->toArray(),
+
+            'calon-mahasiswa' => Permission::whereIn('name', [
+                'read_dashboard',
+            ])->get(),
         ];
 
         // Assign permissions ke roles

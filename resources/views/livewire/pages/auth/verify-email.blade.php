@@ -4,22 +4,28 @@ use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+
+new #[Layout('layouts.guest')] #[Title('Verifikasi Email')] class extends Component {
     /**
      * Send an email verification notification to the user.
      */
     public function sendVerification(): void
     {
-        if (Auth::user()->hasVerifiedEmail()) {
+        $user = Auth::user();
+
+        if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
 
             return;
         }
 
-        Auth::user()->sendEmailVerificationNotification();
+        $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
     }
@@ -31,28 +37,45 @@ new #[Layout('layouts.guest')] class extends Component
     {
         $logout();
 
-        $this->redirect('/', navigate: true);
+        $this->redirect('/');
     }
 }; ?>
 
 <div>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+    <div id="auth">
+        <div class="row h-100">
+            <div class="col-lg-5 col-12">
+                <div id="auth-left">
+                    <div class="auth-logo">
+                        <a href="{{ route('home') }}"><img src="{{ asset('img/logo/logostt-lightmode.png') }}"
+                                alt="Logo"></a>
+                    </div>
+                    <h1 class="auth-title">Verifikasi Email Anda</h1>
+                    <p class="auth-subtitle mb-0">Terima kasih sudah mendaftar.</p>
+                    <p class="auth-subtitle mb-5">Silakan klik link verifikasi yang telah kami kirimkan ke email Anda.
+                    </p>
+                    @if (session('status') === 'verification-link-sent')
+                        <div class="alert alert-success">
+                            Link verifikasi baru telah dikirim ke email Anda.
+                        </div>
+                    @endif
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+                    <button wire:click="sendVerification" type="button" class="btn btn-primary">
+                        Kirim Ulang Email Verifikasi
+                    </button>
+
+                    <button wire:click="logout" type="button" class="btn btn-link">
+                        Logout
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-7 d-none d-lg-block">
+                <div id="auth-right">
+
+                </div>
+            </div>
         </div>
-    @endif
 
-    <div class="mt-4 flex items-center justify-between">
-        <x-primary-button wire:click="sendVerification">
-            {{ __('Resend Verification Email') }}
-        </x-primary-button>
-
-        <button wire:click="logout" type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            {{ __('Log Out') }}
-        </button>
     </div>
+
 </div>

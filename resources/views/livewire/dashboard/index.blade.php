@@ -1,7 +1,7 @@
 <div>
     {{-- The whole world belongs to you. --}}
     <div class="page-heading">
-        <h3>Horizontal Layout</h3>
+        <h3>Selamat datang, {{ auth()->user()->name }}</h3>
     </div>
     <div class="page-content">
         <section class="row">
@@ -76,23 +76,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Profile Visit</h4>
-                            </div>
-                            <div class="card-body">
+                
+                @hasrole('super-admin')
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Profile Visit</h4>
+                                </div>
+                                <div class="card-body">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endhasrole
+
                 <div class="row">
                     <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header">
                                 <h4>Profile Visit</h4>
                             </div>
+
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-6">
@@ -202,18 +207,18 @@
             <div class="col-12 col-lg-3">
                 <div class="card">
                     <div class="card-body py-4 px-5">
-
                         <div class="d-flex align-items-center">
                             <div class="avatar avatar-xl">
                                 <img src="{{ asset('mazer/assets/compiled/jpg/1.jpg') }}" alt="Face 1">
                             </div>
                             <div class="ms-3 name">
-                                <h5 class="font-bold">John Duck</h5>
-                                <h6 class="text-muted mb-0">@johnducky</h6>
+                                <h5 class="font-bold">{{ auth()->user()->name }}</h5>
+                                <h6 class="text-muted mb-0">{{ auth()->user()->email }}</h6>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="card">
                     <div class="card-header">
                         <h4>Recent Messages</h4>
@@ -252,6 +257,8 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- @hasrole('super-admin') --}}
                 <div class="card">
                     <div class="card-header">
                         <h4>Visitors Profile</h4>
@@ -259,6 +266,7 @@
                     <div class="card-body">
                     </div>
                 </div>
+                {{-- @endhasrole --}}
             </div>
         </section>
     </div>

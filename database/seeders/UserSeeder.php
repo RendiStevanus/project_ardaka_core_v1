@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
 
         $superAdmin->assignRole('super-admin');
 
-        $camaba = User::factory(1000)->create();
+        $camaba = User::factory(5)->create();
 
         foreach ($camaba as $camaba) {
             $camaba->assignRole('calon-mahasiswa');

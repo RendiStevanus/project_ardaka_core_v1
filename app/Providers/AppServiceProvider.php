@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, $ability) {
                 return $user->hasRole('super-admin') ? true : null;
         });
+
+        // URL::forceRootUrl(config('app.url'));
     }
 }

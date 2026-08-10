@@ -6,7 +6,7 @@ use App\Livewire\Dashboard\Index;
 
 Route::view('/', 'welcome')->name('home');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', Index::class)
         ->name('dashboard');
 });
