@@ -16,46 +16,29 @@ class RolePermissionSeeder extends Seeder
         // roles
         $roles = [
             'super-admin',
-            'admin-pmb',
-            'pimpinan',
-            'keuangan',
-            'calon-mahasiswa',
+            'admin',
+            'user',
+
         ];
 
         // create roles
-        foreach ($roles as $roleName){
+        foreach ($roles as $roleName) {
             Role::firstOrCreate(['name' => $roleName]);
         }
-        
+
         // permissions
         $resources = [
+            'dashboard',
+
+
+            // Super-admin
             'user',
             'role',
             'permission',
-            'dashboard',
 
-            'master_program_studi',
-            'master_tahun_akademik',
-            'master_gelombang',
-            'master_jalur_masuk',
-            'master_agama',
-            'master_wilayah',
-            'master_pengaturan',
 
-            'pmb_pendaftaran',
-            'pmb_berkas',
-            'pmb_pembayaran',
-            'pmb_verifikasi',
-            'pmb_seleksi',
-            'pmb_jadwal_tes',
-            'pmb_penilaian',
-            'pmb_kelulusan',
-            'pmb_registrasi_ulang',
-            'pmb_generate_nim',
-
-            'laporan',
         ];
-        $actions = ['read', 'create', 'update', 'delete', 'export'];
+        $actions = ['create', 'read', 'update', 'delete'];
 
         // create all permissions
         foreach ($resources as $resource) {
@@ -69,30 +52,27 @@ class RolePermissionSeeder extends Seeder
         // Mapping role → permissions
         $rolePermissions = [
             'super-admin' => Permission::pluck('name')->toArray(), // semua permission
-            'admin-pmb' => Permission::whereNotIn('name', [
+            'admin' => Permission::whereNotIn('name', [
                 'create_user',
                 'read_user',
                 'update_user',
                 'delete_user',
                 'reset_user',
-                'export_user',
 
                 'create_role',
                 'read_role',
                 'update_role',
                 'delete_role',
                 'reset_role',
-                'export_role',
 
                 'create_permission',
                 'read_permission',
                 'update_permission',
                 'delete_permission',
                 'reset_permission',
-                'export_permission',
             ])->pluck('name')->toArray(),
 
-            'calon-mahasiswa' => Permission::whereIn('name', [
+            'user' => Permission::whereIn('name', [
                 'read_dashboard',
             ])->get(),
         ];

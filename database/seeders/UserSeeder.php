@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -12,17 +14,12 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $superAdmin = User::factory()->create([
+        User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
-            ]);
-
-        $superAdmin->assignRole('super-admin');
-
-        $camaba = User::factory(5)->create();
-
-        foreach ($camaba as $camaba) {
-            $camaba->assignRole('calon-mahasiswa');
-        }
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ])->assignRole('super-admin');
     }
 }
