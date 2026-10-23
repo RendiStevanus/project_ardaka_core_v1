@@ -2,6 +2,7 @@
 
 namespace App\Livewire\ActivityLog;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -72,7 +73,19 @@ class Index extends Component
     {
         $activities = Activity::query()
             ->with(['causer', 'subject'])
-            ->when($this->search, fn($q) => $q->where('description', 'like', "%{$this->search}%"))
+            ->when($this->search, function ($q) {
+                $term = "%{$this->search}%";
+
+                $q->where(function ($q) use ($term) {
+                    $q->where('description', 'like', $term)
+                        ->orWhereHasMorph('causer', [User::class], function ($q) use ($term) {
+                            $q->where(function ($q) use ($term) {
+                                $q->where('name', 'like', $term)
+                                    ->orWhere('email', 'like', $term);
+                            });
+                        });
+                });
+            })
             ->when($this->logName, fn($q) => $q->where('log_name', $this->logName))
             ->when($this->event, fn($q) => $q->where('event', $this->event))
             ->when($this->dateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
