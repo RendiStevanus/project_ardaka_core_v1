@@ -1,7 +1,9 @@
 <?php
+
 use App\Livewire\UserManagement\User\Index as UserIndex;
 use App\Livewire\UserManagement\Role\Index as RoleIndex;
 use App\Livewire\UserManagement\Permission\Index as PermissionIndex;
+use App\Livewire\ActivityLog\Index as ActivityLogIndex;
 
 use Illuminate\Support\Facades\Route;
 
@@ -12,4 +14,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('roles');
     Route::get('/permissions', PermissionIndex::class)
         ->name('permissions');
+
+
+    Route::get('/activity-logs', ActivityLogIndex::class)
+        ->name('activity-logs')
+        ->middleware('can:read_activity_log');
 });

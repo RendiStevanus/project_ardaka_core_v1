@@ -39,6 +39,12 @@ return [
                     ['title' => 'Users',       'route' => 'users',       'permission' => 'read_user'],
                     ['title' => 'Roles',       'route' => 'roles',       'permission' => 'read_role'],
                     ['title' => 'Permissions', 'route' => 'permissions', 'permission' => 'read_permission'],
+                    [
+                        'title' => 'Activity Log',
+                        'icon' => 'bi bi-clock-history',
+                        'route' => 'activity-logs',
+                        'permission' => 'read_activity_log',
+                    ],
                 ],
             ],
 

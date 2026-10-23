@@ -5,6 +5,7 @@ namespace App\Livewire\UserManagement\User;
 use App\Models\User;
 use App\Traits\AlertTrait;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -111,29 +112,45 @@ class Index extends Component
                 return;
             }
 
-            $user->update([
-                'name'  => $this->name,
-                'email' => $this->email,
-            ]);
-            $user->syncRoles($this->role);
-            $message = 'User berhasil diupdate.';
-        }
+            $oldRole = $user->getRoleNames()->first();
 
-        if ($this->user_id) {
-            $user = User::findOrFail($this->user_id);
-            $user->update([
-                'name'  => $this->name,
-                'email' => $this->email,
-            ]);
-            $user->syncRoles($this->role);
+            DB::transaction(function () use ($user) {
+                $user->update([
+                    'name'  => $this->name,
+                    'email' => $this->email,
+                ]);
+
+                $user->syncRoles($this->role);
+            });
+
+            if ($oldRole !== $this->role) {
+                activity('User')
+                    ->performedOn($user)
+                    ->event('role-changed')
+                    ->withProperties(['old' => $oldRole, 'new' => $this->role])
+                    ->log('Role user diubah');
+            }
+
             $message = 'User berhasil diupdate.';
         } else {
-            $user = User::create([
-                'name'     => $this->name,
-                'email'    => $this->email,
-                'password' => bcrypt('password'),
-            ]);
-            $user->assignRole($this->role);
+            $user = DB::transaction(function () {
+                $user = User::create([
+                    'name'     => $this->name,
+                    'email'    => $this->email,
+                    'password' => bcrypt('password'),
+                ]);
+
+                $user->assignRole($this->role);
+
+                return $user;
+            });
+
+            activity('User')
+                ->performedOn($user)
+                ->event('role-changed')
+                ->withProperties(['old' => null, 'new' => $this->role])
+                ->log('Role user ditetapkan');
+
             $message = 'User berhasil disimpan.';
         }
 

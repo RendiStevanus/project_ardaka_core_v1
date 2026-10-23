@@ -46,6 +46,8 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
+        Permission::firstOrCreate(['name' => 'read_activity_log', 'guard_name' => 'web']);
+
         // Mapping role → permissions
         $rolePermissions = [
             'super-admin' => Permission::pluck('name')->toArray(), // semua permission

@@ -189,7 +189,17 @@ class Index extends Component
         Gate::authorize('update_role');
 
         $role = Role::findOrFail($this->roleId);
+        $before = $role->permissions->pluck('name')->sort()->values()->all();
+
         $role->syncPermissions($this->rolePermissions);
+
+        $after = $role->permissions()->pluck('name')->sort()->values()->all();
+
+        activity('role')
+            ->performedOn($role)
+            ->event('permissions-synced')
+            ->withProperties(['old' => $before, 'new' => $after])
+            ->log('Permission role diperbarui');
 
         $this->resetInputFields();
         $this->dispatch('closeModal', id: 'setPermissionModal');
