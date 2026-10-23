@@ -107,28 +107,17 @@ ARDAKA CORE
 
 ## 🎯 Tujuan Sistem
 
-ARDAKA CORE dikembangkan sebagai sistem yang dapat menjadi dasar dalam pengelolaan proses **Penerimaan Mahasiswa Baru** secara digital.
-
-Dengan struktur sistem yang modular dan penggunaan Role & Permission, aplikasi dapat dikembangkan lebih lanjut sesuai kebutuhan institusi tanpa harus membangun ulang komponen dasar sistem.
+1. Menyediakan fondasi standar untuk seluruh produk aplikasi Ardaka.
+    
+2. Membuat fitur umum dapat digunakan ulang.
+    
+3. Memastikan produk memiliki standar keamanan, kualitas, dan dokumentasi.
+    
+4. Memungkinkan produk dikembangkan secara modular.
+    
+5. Mendukung pengelolaan versi dan pengembangan produk jangka panjang.
 
 ## 🔮 Pengembangan Selanjutnya
 
-Sistem dapat dikembangkan dengan menambahkan berbagai modul PMB, antara lain:
+Sistem dapat dikembangkan dengan menambahkan berbagai modul.
 
-- Tahun Akademik
-- Jalur PMB
-- Gelombang PMB
-- Pendaftaran Calon Mahasiswa
-- Data Pribadi Calon Mahasiswa
-- Data Keluarga
-- Data Pendidikan
-- Data Dokumen
-- Pembayaran Pendaftaran
-- Seleksi PMB
-- Jadwal Ujian
-- Ruang Ujian
-- Pengumuman Hasil Seleksi
-- Registrasi Ulang
-- Generate Nomor Induk Mahasiswa (NIM)
-- Laporan PMB
-- Dashboard Statistik PMB
