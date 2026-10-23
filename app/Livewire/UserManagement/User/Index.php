@@ -42,8 +42,6 @@ class Index extends Component
 
 
     public $deleteId = '';
-
-
     public function mount()
     {
         $this->roles = Role::orderBy('name')->get();
