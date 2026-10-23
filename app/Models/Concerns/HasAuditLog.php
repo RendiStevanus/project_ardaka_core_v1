@@ -16,7 +16,7 @@ trait HasAuditLog
             ->logFillable()
             ->logExcept(['password', 'remember_token'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs()
+            ->dontLogEmptyChanges()
             ->setDescriptionForEvent(
                 fn(string $eventName) => class_basename($this) . ' ' . $eventName
             );
