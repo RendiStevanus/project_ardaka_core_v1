@@ -9,12 +9,10 @@
 
 ## 📖 About Sistem
 
-**Sistem Informasi Penerimaan Mahasiswa Baru (SIM PMB)**
-merupakan aplikasi berbasis web yang dikembangkan menggunakan **Laravel 12** sebagai framework utama. Sistem ini dirancang untuk mendukung pengelolaan proses administrasi dan data dalam kegiatan **Penerimaan Mahasiswa Baru (PMB)** secara terstruktur dan terintegrasi.
+**ARDAKA CORE** adalah fondasi perangkat lunak yang akan menjadi aset teknologi utama ARDAKA TECHNOLOGIES. Fondasi ini dirancang supaya kita tidak perlu membangun ulang fitur-fitur umum setiap kali membuat produk baru.
 
 Aplikasi menggunakan **Livewire 3** untuk membangun antarmuka yang interaktif serta **Spatie Laravel Permission** untuk mengimplementasikan sistem **Role-Based Access Control (RBAC)** sehingga setiap pengguna dapat diberikan hak akses sesuai dengan peran dan tanggung jawabnya.
 
-SIM PMB juga menyediakan modul **Master Data Program Studi** sebagai salah satu komponen dasar dalam pengelolaan data penerimaan mahasiswa baru.
 
 ## 🚀 Tech Stack
 
@@ -57,7 +55,7 @@ SIM PMB juga menyediakan modul **Master Data Program Studi** sebagai salah satu 
 
 ## 🔐 Role & Permission
 
-SIM PMB menggunakan **Spatie Laravel Permission** sebagai sistem otorisasi untuk mengatur hak akses pengguna.
+ARDAKA CORE menggunakan **Spatie Laravel Permission** sebagai sistem otorisasi untuk mengatur hak akses pengguna.
 
 ### Role
 
@@ -88,19 +86,12 @@ create_permission
 update_permission
 delete_permission
 
-read_program_studi
-create_program_studi
-update_program_studi
-delete_program_studi
-
-````
 
 Setiap Role dapat memiliki satu atau lebih Permission sesuai kebutuhan.
 
 ## 📁 Struktur Modul
 
-```text
-SIM PMB
+ARDAKA CORE
 │
 ├── Authentication
 │   ├── Login
@@ -112,12 +103,11 @@ SIM PMB
 │   └── Permissions
 │
 └── Master Data
-    └── Program Studi
-````
+    └── 
 
 ## 🎯 Tujuan Sistem
 
-SIM PMB dikembangkan sebagai sistem yang dapat menjadi dasar dalam pengelolaan proses **Penerimaan Mahasiswa Baru** secara digital.
+ARDAKA CORE dikembangkan sebagai sistem yang dapat menjadi dasar dalam pengelolaan proses **Penerimaan Mahasiswa Baru** secara digital.
 
 Dengan struktur sistem yang modular dan penggunaan Role & Permission, aplikasi dapat dikembangkan lebih lanjut sesuai kebutuhan institusi tanpa harus membangun ulang komponen dasar sistem.
 
