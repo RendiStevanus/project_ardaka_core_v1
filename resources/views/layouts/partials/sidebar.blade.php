@@ -44,52 +44,40 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
+                @foreach (\App\Support\Sidebar::sections() as $section)
+                    <li class="sidebar-title">{{ $section['title'] }}</li>
 
-                @foreach (config('sidebar') as $menu)
-                    {{-- Menu tanpa submenu --}}
-                    @if (!isset($menu['children']))
-                        @can($menu['permission'])
-                            <li class="sidebar-item {{ request()->routeIs(...$menu['active']) ? 'active' : '' }}">
-                                <a href="{{ route($menu['route']) }}" class="sidebar-link">
-                                    <i class="{{ $menu['icon'] }}"></i>
-                                    <span>{{ $menu['title'] }}</span>
-                                </a>
-                            </li>
-                        @endcan
-                    @else
-                        {{-- Menu dengan submenu --}}
-                        @canany($menu['permissions'])
-                            <li class="sidebar-item {{ request()->routeIs(...$menu['active']) ? 'active' : '' }} has-sub">
+                    @foreach ($section['menus'] as $menu)
+                        @php($isActive = request()->routeIs(...$menu['active']))
 
+                        @if (isset($menu['children']))
+                            <li class="sidebar-item has-sub {{ $isActive ? 'active' : '' }}">
                                 <a href="#" class="sidebar-link">
                                     <i class="{{ $menu['icon'] }}"></i>
                                     <span>{{ $menu['title'] }}</span>
                                 </a>
 
                                 <ul class="submenu">
-
                                     @foreach ($menu['children'] as $child)
-                                        @can($child['permission'])
-                                            <li
-                                                class="submenu-item {{ request()->routeIs(...$child['active']) ? 'active' : '' }}">
-
-                                                <a href="{{ route($child['route']) }}" class="submenu-link">
-
-                                                    {{ $child['title'] }}
-
-                                                </a>
-
-                                            </li>
-                                        @endcan
+                                        <li
+                                            class="submenu-item {{ request()->routeIs(...$child['active']) ? 'active' : '' }}">
+                                            <a href="{{ route($child['route']) }}" class="submenu-link">
+                                                {{ $child['title'] }}
+                                            </a>
+                                        </li>
                                     @endforeach
-
                                 </ul>
-
                             </li>
-                        @endcanany
-                    @endif
+                        @else
+                            <li class="sidebar-item {{ $isActive ? 'active' : '' }}">
+                                <a href="{{ route($menu['route']) }}" class="sidebar-link">
+                                    <i class="{{ $menu['icon'] }}"></i>
+                                    <span>{{ $menu['title'] }}</span>
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
                 @endforeach
-
             </ul>
         </div>
     </div>
