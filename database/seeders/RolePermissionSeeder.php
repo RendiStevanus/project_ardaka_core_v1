@@ -30,7 +30,6 @@ class RolePermissionSeeder extends Seeder
         $resources = [
             'dashboard',
 
-
             // Super-admin
             'user',
             'role',
@@ -47,8 +46,6 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        Permission::firstOrCreate(['name' => 'reset_user']);
-
         // Mapping role → permissions
         $rolePermissions = [
             'super-admin' => Permission::pluck('name')->toArray(), // semua permission
@@ -57,19 +54,16 @@ class RolePermissionSeeder extends Seeder
                 'read_user',
                 'update_user',
                 'delete_user',
-                'reset_user',
 
                 'create_role',
                 'read_role',
                 'update_role',
                 'delete_role',
-                'reset_role',
 
                 'create_permission',
                 'read_permission',
                 'update_permission',
                 'delete_permission',
-                'reset_permission',
             ])->pluck('name')->toArray(),
 
             'user' => Permission::whereIn('name', [

@@ -3,13 +3,17 @@
 namespace App\Livewire\UserManagement\User;
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use App\Traits\AlertTrait;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Models\Role;
 use SweetAlert2\Laravel\Traits\WithSweetAlert;
-use App\Traits\AlertTrait;
 
 #[Layout('layouts.app')]
 #[Title('Users')]
@@ -18,6 +22,9 @@ class Index extends Component
     use WithPagination;
     use WithSweetAlert;
     use AlertTrait;
+
+    #[Locked]
+    public $user_id = null;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -33,15 +40,109 @@ class Index extends Component
 
     public $role = '';
 
-    public $user_id = '';
 
     public $deleteId = '';
 
+
+    public function mount()
+    {
+        $this->roles = Role::orderBy('name')->get();
+    }
     public function resetInputFields()
     {
-        $this->name = '';
-        $this->email = '';
-        $this->role = '';
+        $this->reset(['name', 'email', 'role', 'user_id']);
+        $this->resetValidation();
+    }
+
+    public function create()
+    {
+        $this->resetInputFields();
+        $this->dispatch('openModal', id: 'userModal');
+    }
+
+    public function edit($id)
+    {
+        if (Gate::denies('update_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
+        $this->resetInputFields();
+
+        $user = User::findOrFail($id);
+
+        $this->user_id = $user->id;
+        $this->name    = $user->name;
+        $this->email   = $user->email;
+        $this->role    = $user->getRoleNames()->first() ?? '';
+
+        $this->dispatch('openModal', id: 'userModal');
+    }
+
+    public function save()
+    {
+        if (Gate::denies($this->user_id ? 'update_user' : 'create_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
+        $this->validate(
+            [
+                'name'  => 'required',
+                'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user_id)],
+                'role'  => 'required',
+            ],
+            [
+                'name.required'  => 'Nama wajib diisi.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email'    => 'Email tidak valid.',
+                'email.unique'   => 'Email sudah digunakan.',
+                'role.required'  => 'Role wajib diisi.',
+            ]
+        );
+
+        if ($this->user_id) {
+            $user = User::findOrFail($this->user_id);
+
+            if (
+                $user->hasRole('super-admin')
+                && $this->role !== 'super-admin'
+                && User::role('super-admin')->count() <= 1
+            ) {
+                $this->addError('role', 'Role Super Admin terakhir tidak dapat diubah.');
+                return;
+            }
+
+            $user->update([
+                'name'  => $this->name,
+                'email' => $this->email,
+            ]);
+            $user->syncRoles($this->role);
+            $message = 'User berhasil diupdate.';
+        }
+
+        if ($this->user_id) {
+            $user = User::findOrFail($this->user_id);
+            $user->update([
+                'name'  => $this->name,
+                'email' => $this->email,
+            ]);
+            $user->syncRoles($this->role);
+            $message = 'User berhasil diupdate.';
+        } else {
+            $user = User::create([
+                'name'     => $this->name,
+                'email'    => $this->email,
+                'password' => bcrypt('password'),
+            ]);
+            $user->assignRole($this->role);
+            $message = 'User berhasil disimpan.';
+        }
+
+        $this->resetInputFields();
+        $this->dispatch('closeModal', id: 'userModal');
+
+        $this->success($message);
     }
 
     public function render()
@@ -78,109 +179,45 @@ class Index extends Component
         return view('livewire.user-management.user.index', $data);
     }
 
-    public function mount()
-    {
-        $this->roles = Role::orderBy('name')->get();
-    }
-
-    public function create()
-    {
-        $this->resetValidation();
-        $this->resetInputFields();
-    }
-
-    public function store()
-    {
-        $this->validate(
-            [
-                'name' => 'required',
-                'email' => 'required|email|unique:users',
-                'role' => 'required',
-            ],
-            [
-                'name.required' => 'Nama wajib diisi.',
-                'email.required' => 'Email wajib diisi.',
-                'email.email' => 'Email tidak valid.',
-                'email.unique' => 'Email sudah digunakan.',
-                'role.required' => 'Role wajib diisi.',
-            ]
-        );
-
-        $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => bcrypt('password'),
-        ]);
-
-        $user->assignRole($this->role);
-
-        $this->resetInputFields();
-        $this->dispatch('closeCreateModal');
-
-        $this->success('User berhasil disimpan.');
-    }
-
-    public function edit($id)
-    {
-        $this->resetValidation();
-
-        $user = User::with('roles')->findOrFail($id);
-
-        $this->name     = $user->name;
-        $this->email    = $user->email;
-        $this->role     = $user->getRoleNames()->first();
-        $this->user_id  = $user->id;
-    }
-
-    public function update($user_id)
-    {
-        $this->validate(
-            [
-                'name'  => 'required',
-                'email' => 'required|email|unique:users,email,' . $user_id,
-                'role'  => 'required',
-            ],
-            [
-                'name.required'     => 'Nama wajib diisi.',
-                'email.required'    => 'Email wajib diisi.',
-                'email.email'       => 'Email tidak valid.',
-                'email.unique'      => 'Email sudah digunakan.',
-                'role.required'     => 'Role wajib diisi.',
-            ]
-        );
-
-        $user = User::findOrFail($user_id);
-        $user->update([
-            'name'  => $this->name,
-            'email' => $this->email,
-        ]);
-        
-        // Jika $this->role berisi nama role
-        $user->syncRoles($this->role);
-
-        $this->resetInputFields();
-        $this->dispatch('closeEditModal');
-
-        $this->success('User berhasil diupdate.');
-    }
-
     public function confirmDelete($id)
     {
+        if (Gate::denies('delete_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
         $user = User::findOrFail($id);
 
         $this->dispatch(
             'confirmDelete',
             id: $user->id,
-            name: $user->name,
-            email: $user->email,
+            component: $this->getId(),
+            html: '<b>' . e($user->name) . '</b><br><small>' . e($user->email) . '</small>',
         );
     }
 
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        if (Gate::denies('delete_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            $this->error('Anda tidak dapat menghapus akun Anda sendiri.');
+            return;
+        }
+
+        if ($user->hasRole('super-admin') && User::role('super-admin')->count() <= 1) {
+            $this->error('Super Admin terakhir tidak dapat dihapus.');
+            return;
+        }
+
+
+        $user->delete();
 
         $this->success('User berhasil dihapus.');
     }
-
 }

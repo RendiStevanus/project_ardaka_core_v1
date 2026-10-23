@@ -1,141 +1,35 @@
-<div>
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-            <h3 class="card-title mb-0">Users</h3>
+    <div>
+        <x-card title="Users">
+            <x-slot:actions>
+                <x-button can="create_user" wire:click="create" icon="bi-person-fill-add">
+                    Tambah User
+                </x-button>
+            </x-slot:actions>
 
-            <div class="d-flex gap-2 mt-2 mt-md-0">
-                @can('create_user')
-                    <button wire:click="create" type="button" class="btn btn-primary btn-xs" data-bs-toggle="modal"
-                        data-bs-target="#createModal">
-                        <i class="bi bi-person-fill-add"></i> Tambah
-                    </button>
-                @endcan
+            <x-table.toolbar />
 
-                @can('export_user')
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="bi bi-printer"></i> Export
-                        </button>
+            <x-table :paginator="$users">
+                <x-slot:head>
+                    <th width="5%" class="text-center">No</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th width="10%" class="text-center"><i class="bi bi-gear"></i></th>
+                </x-slot:head>
 
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="bi bi-file-earmark-excel"></i> Export to Excel
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">
-                                    <i class="bi bi-filetype-pdf"></i> Export to PDF
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                @endcan
-            </div>
-        </div>
+                @foreach ($users as $user)
+                    <tr wire:key="user-{{ $user->id }}">
+                        <td class="text-center">{{ $users->firstItem() + $loop->index }}</td>
+                        <td class="text-bold-500">{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->getRoleNames()->implode(', ') ?: '-' }}</td>
+                        <x-table.actions :id="$user->id" can-edit="update_user" can-delete="delete_user"
+                            :delete="true" :edit="true">
+                        </x-table.actions>
+                    </tr>
+                @endforeach
+            </x-table>
+        </x-card>
 
-        <div class="card-content">
-            <div class="card-body">
-                <!-- Table with outer spacing -->
-                <div class="mb-3 d-flex justify-content-between">
-                    <div class="col-12 col-md-2 d-flex align-items-center">
-                        <select wire:model.live="paginate" class="form-select form-select-sm" id="paginate">
-                            <option value="5">5</option>
-                            <option value="10" selected="">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <label class="form-label ms-2" for="paginate">entries</label>
-                    </div>
-                    <div>
-                        <input wire:model.live="search" class="form-control form-control-sm" id="search"
-                            placeholder="Search..." type="text">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover mb-2">
-                        <thead>
-                            <tr>
-                                <th width="5%" class="text-center">No</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th width="10%" class="text-center"><i class="bi bi-gear"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            @php
-                                $no = $users->firstItem();
-                            @endphp
-
-                            @foreach ($users as $user)
-                                <tr>
-                                    <td class="text-center">{{ $no++ }}</td>
-                                    <td class="text-bold-500">{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>{{ $user->getRoleNames()->implode(', ') ?: '-' }}</td>
-                                    <td class="text-center">
-                                        @can('update_user')
-                                            <a wire:click="edit({{ $user->id }})" href="#" data-bs-toggle="modal"
-                                                data-bs-target="#editModal">
-                                                <i class="bi bi-pen"></i>
-                                            </a>
-                                        @endcan
-                                        @can('delete_user')
-                                            <button wire:click="confirmDelete({{ $user->id }})"
-                                                class="btn btn-link p-0">
-                                                <i class="bi bi-trash text-danger"></i>
-                                            </button>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    {{ $users->onEachSide(0)->links() }}
-                </div>
-            </div>
-        </div>
+        @include('livewire.user-management.user.form')
     </div>
-
-    {{-- Modal --}}
-    @include('livewire.user-management.user.create')
-    @include('livewire.user-management.user.edit')
-
-    @script
-        <script>
-            $wire.on('closeCreateModal', () => {
-                $('#createModal').modal('hide');
-            });
-
-            $wire.on('closeEditModal', () => {
-                $('#editModal').modal('hide');
-            });
-
-            $wire.on('confirmDelete', (event) => {
-                Swal.fire({
-                    html: `
-                            Apakah Anda yakin ingin menghapus user berikut?<hr>
-                            <b>${event.name}</b><br>
-                            <small>${event.email}</small><br>
-                        `,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#435ebe',
-                    cancelButtonColor: '#dc3545',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $wire.destroy(event.id);
-                    }
-                });
-            });
-        </script>
-    @endscript
-
-</div>

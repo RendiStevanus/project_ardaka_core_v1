@@ -37,6 +37,37 @@
     @include('layouts.partials.scripts')
     @livewireScripts
     @include('sweetalert2::index')
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('openModal', ({
+                id
+            }) => $('#' + id).modal('show'));
+            Livewire.on('closeModal', ({
+                id
+            }) => $('#' + id).modal('hide'));
+
+            Livewire.on('confirmDelete', ({
+                id,
+                html,
+                component
+            }) => {
+                Swal.fire({
+                    html: 'Apakah Anda yakin ingin menghapus data berikut?<hr>' + html,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#435ebe',
+                    cancelButtonColor: '#dc3545',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.find(component).call('destroy', id);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

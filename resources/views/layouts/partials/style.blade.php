@@ -42,4 +42,32 @@
         color: #fff;
         top: -2px;
     }
+
+    /* =========================================================
+       Sticky Footer - Mazer
+       ========================================================= */
+
+    html,
+    body {
+        min-height: 100%;
+    }
+
+    #app {
+        min-height: 100vh;
+    }
+
+    #app #main {
+        min-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    #app #main #main-content {
+        flex: 1 0 auto !important;
+    }
+
+    #app #main>footer {
+        margin-top: auto !important;
+        flex-shrink: 0 !important;
+    }
 </style>
