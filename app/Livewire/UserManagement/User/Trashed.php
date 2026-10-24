@@ -38,7 +38,7 @@ class Trashed extends Component
 
     public function back()
     {
-        return $this->redirectRoute('users', navigate: true);
+        return $this->redirectRoute('users');
     }
 
     public function render()

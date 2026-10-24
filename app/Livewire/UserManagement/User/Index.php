@@ -291,6 +291,6 @@ class Index extends Component
     {
         Gate::authorize('restore_user');
 
-        return $this->redirectRoute('users.trashed', navigate: true);
+        return $this->redirectRoute('users.trashed');
     }
 }
