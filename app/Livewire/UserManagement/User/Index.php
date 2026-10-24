@@ -7,6 +7,7 @@ use App\Traits\AlertTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -137,7 +138,8 @@ class Index extends Component
                 $user = User::create([
                     'name'     => $this->name,
                     'email'    => $this->email,
-                    'password' => bcrypt('password'),
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
                 ]);
 
                 $user->assignRole($this->role);
@@ -158,6 +160,56 @@ class Index extends Component
         $this->dispatch('closeModal', id: 'userModal');
 
         $this->success($message);
+    }
+
+    public function confirmToggle($id)
+    {
+        if (Gate::denies('update_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
+        $user   = User::findOrFail($id);
+        $action = $user->is_active ? 'Nonaktifkan' : 'Aktifkan';
+
+        $this->dispatch(
+            'confirmAction',
+            id: $user->id,
+            component: $this->getId(),
+            method: 'toggleActive',
+            title: "{$action} user?",
+            html: '<b>' . e($user->name) . '</b><br><small>' . e($user->email) . '</small>',
+            confirmText: 'Ya, ' . strtolower($action),
+            icon: $user->is_active ? 'warning' : 'question',
+        );
+    }
+
+    public function toggleActive($id)
+    {
+        if (Gate::denies('update_user')) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            $this->error('Anda tidak dapat menonaktifkan akun Anda sendiri.');
+            return;
+        }
+
+        if (
+            $user->is_active
+            && $user->hasRole('super-admin')
+            && User::role('super-admin')->where('is_active', true)->count() <= 1
+        ) {
+            $this->error('Super Admin aktif terakhir tidak dapat dinonaktifkan.');
+            return;
+        }
+
+        $user->update(['is_active' => ! $user->is_active]);
+
+        $this->success($user->is_active ? 'User berhasil diaktifkan.' : 'User berhasil dinonaktifkan.');
     }
 
     public function render()

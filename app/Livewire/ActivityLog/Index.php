@@ -3,6 +3,7 @@
 namespace App\Livewire\ActivityLog;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -72,14 +73,17 @@ class Index extends Component
     public function render()
     {
         $activities = Activity::query()
-            ->with(['causer', 'subject'])
+            ->with([
+                'causer'  => fn(MorphTo $q) => $q->withTrashed(),
+                'subject' => fn(MorphTo $q) => $q->withTrashed(),
+            ])
             ->when($this->search, function ($q) {
                 $term = "%{$this->search}%";
 
                 $q->where(function ($q) use ($term) {
                     $q->where('description', 'like', $term)
                         ->orWhereHasMorph('causer', [User::class], function ($q) use ($term) {
-                            $q->where(function ($q) use ($term) {
+                            $q->withTrashed()->where(function ($q) use ($term) {
                                 $q->where('name', 'like', $term)
                                     ->orWhere('email', 'like', $term);
                             });

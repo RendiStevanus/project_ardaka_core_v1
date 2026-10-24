@@ -66,6 +66,31 @@
                     }
                 });
             });
+
+            Livewire.on('confirmAction', ({
+                id,
+                component,
+                method,
+                title,
+                html,
+                confirmText,
+                icon
+            }) => {
+                Swal.fire({
+                    title: title ?? 'Konfirmasi',
+                    html: html,
+                    icon: icon ?? 'question',
+                    showCancelButton: true,
+                    confirmButtonText: confirmText ?? 'Ya, lanjutkan',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#435ebe',
+                    cancelButtonColor: '#dc3545',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.find(component).call(method, id);
+                    }
+                });
+            });
         });
     </script>
 </body>

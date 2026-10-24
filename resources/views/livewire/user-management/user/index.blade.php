@@ -25,6 +25,11 @@
                         <td>{{ $user->getRoleNames()->implode(', ') ?: '-' }}</td>
                         <x-table.actions :id="$user->id" can-edit="update_user" can-delete="delete_user"
                             :delete="true" :edit="true">
+                            <x-button can="update_user" wire:click="confirmToggle('{{ $user->id }}')" variant="link"
+                                class="p-0 lh-1 fs-6" title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                <i
+                                    class="bi {{ $user->is_active ? 'bi-toggle-on text-success' : 'bi-toggle-off text-secondary' }}"></i>
+                            </x-button>
                         </x-table.actions>
                     </tr>
                 @endforeach
