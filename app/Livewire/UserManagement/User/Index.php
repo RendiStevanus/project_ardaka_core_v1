@@ -282,9 +282,15 @@ class Index extends Component
             return;
         }
 
-
         $user->delete();
 
         $this->success('User berhasil dihapus.');
+    }
+
+    public function goToTrashed()
+    {
+        Gate::authorize('restore_user');
+
+        return $this->redirectRoute('users.trashed', navigate: true);
     }
 }

@@ -47,6 +47,8 @@ class RolePermissionSeeder extends Seeder
         }
 
         Permission::firstOrCreate(['name' => 'read_activity_log', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'restore_user', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'forcedelete_user', 'guard_name' => 'web']);
 
         // Mapping role → permissions
         $rolePermissions = [

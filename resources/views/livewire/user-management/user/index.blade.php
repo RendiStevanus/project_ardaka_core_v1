@@ -4,6 +4,9 @@
                 <x-button can="create_user" wire:click="create" icon="bi-person-fill-add">
                     Tambah User
                 </x-button>
+                <x-button can="restore_user" wire:click="goToTrashed" variant="outline-secondary" icon="bi-trash">
+                    Trash
+                </x-button>
             </x-slot:actions>
 
             <x-table.toolbar />
