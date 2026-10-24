@@ -8,10 +8,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new #[Layout('layouts.guest')] #[Title('Reset Password')] class extends Component {
     #[Locked]
     public string $token = '';
     public string $email = '';
@@ -39,24 +39,17 @@ new #[Layout('layouts.guest')] class extends Component
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $this->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) {
-                $user->forceFill([
+        $status = Password::reset($this->only('email', 'password', 'password_confirmation', 'token'), function ($user) {
+            $user
+                ->forceFill([
                     'password' => Hash::make($this->password),
                     'remember_token' => Str::random(60),
-                ])->save();
+                ])
+                ->save();
 
-                event(new PasswordReset($user));
-            }
-        );
+            event(new PasswordReset($user));
+        });
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
         if ($status != Password::PASSWORD_RESET) {
             $this->addError('email', __($status));
 
@@ -70,36 +63,61 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <form wire:submit="resetPassword">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+    <x-auth.card title="Reset Password" subtitle="Buat password baru untuk akun Anda.">
+        <form wire:submit="resetPassword">
+            {{-- Email --}}
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input wire:model="email" id="email" type="email"
+                        class="form-control @error('email') is-invalid @enderror" required readonly
+                        autocomplete="username">
+                </div>
+                @error('email')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            {{-- Password baru --}}
+            <div class="mb-3" x-data="{ show: false }">
+                <label for="password" class="form-label">Password Baru</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input wire:model="password" id="password" type="password" :type="show ? 'text' : 'password'"
+                        class="form-control @error('password') is-invalid @enderror" placeholder="Password baru"
+                        required autofocus autocomplete="new-password">
+                    <button type="button" class="input-group-text auth-eye" x-on:click="show = !show" tabindex="-1"
+                        aria-label="Tampilkan atau sembunyikan password">
+                        <i class="bi" :class="show ? 'bi-eye-slash' : 'bi-eye'"></i>
+                    </button>
+                </div>
+                @error('password')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            {{-- Konfirmasi password --}}
+            <div class="mb-4">
+                <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                    <input wire:model="password_confirmation" id="password_confirmation" type="password"
+                        class="form-control @error('password_confirmation') is-invalid @enderror"
+                        placeholder="Ulangi password baru" required autocomplete="new-password">
+                </div>
+                @error('password_confirmation')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
 
-            <x-text-input wire:model="password_confirmation" id="password_confirmation" class="block mt-1 w-full"
-                          type="password"
-                          name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <button type="submit" class="btn btn-primary w-100 py-2" wire:loading.attr="disabled"
+                wire:target="resetPassword">
+                <span wire:loading.remove wire:target="resetPassword">Reset Password</span>
+                <span wire:loading wire:target="resetPassword">
+                    <span class="spinner-border spinner-border-sm me-1"></span> Memproses...
+                </span>
+            </button>
+        </form>
+    </x-auth.card>
 </div>

@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new #[Layout('layouts.guest')] #[Title('Konfirmasi Password')] class extends Component {
     public string $password = '';
 
     /**
@@ -18,10 +18,12 @@ new #[Layout('layouts.guest')] class extends Component
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::guard('web')->validate([
-            'email' => Auth::user()->email,
-            'password' => $this->password,
-        ])) {
+        if (
+            !Auth::guard('web')->validate([
+                'email' => Auth::user()->email,
+                'password' => $this->password,
+            ])
+        ) {
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
             ]);
@@ -34,29 +36,34 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
+    <x-auth.card title="Konfirmasi Password"
+        subtitle="Ini area yang diamankan. Masukkan password Anda untuk melanjutkan.">
 
-    <form wire:submit="confirmPassword">
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
+        <form wire:submit="confirmPassword">
+            <div class="mb-4" x-data="{ show: false }">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input wire:model="password" id="password" type="password" :type="show ? 'text' : 'password'"
+                        class="form-control @error('password') is-invalid @enderror" placeholder="Password" required
+                        autofocus autocomplete="current-password">
+                    <button type="button" class="input-group-text auth-eye" x-on:click="show = !show" tabindex="-1"
+                        aria-label="Tampilkan atau sembunyikan password">
+                        <i class="bi" :class="show ? 'bi-eye-slash' : 'bi-eye'"></i>
+                    </button>
+                </div>
+                @error('password')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
 
-            <x-text-input wire:model="password"
-                          id="password"
-                          class="block mt-1 w-full"
-                          type="password"
-                          name="password"
-                          required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <button type="submit" class="btn btn-primary w-100 py-2" wire:loading.attr="disabled"
+                wire:target="confirmPassword">
+                <span wire:loading.remove wire:target="confirmPassword">Konfirmasi</span>
+                <span wire:loading wire:target="confirmPassword">
+                    <span class="spinner-border spinner-border-sm me-1"></span> Memproses...
+                </span>
+            </button>
+        </form>
+    </x-auth.card>
 </div>

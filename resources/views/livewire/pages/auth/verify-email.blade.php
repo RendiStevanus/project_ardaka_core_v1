@@ -7,10 +7,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Volt\Component;
 
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
-
 new #[Layout('layouts.guest')] #[Title('Verifikasi Email')] class extends Component {
     /**
      * Send an email verification notification to the user.
@@ -42,40 +38,25 @@ new #[Layout('layouts.guest')] #[Title('Verifikasi Email')] class extends Compon
 }; ?>
 
 <div>
-    <div id="auth">
-        <div class="row h-100">
-            <div class="col-lg-5 col-12">
-                <div id="auth-left">
-                    <div class="auth-logo">
-                        <a href="{{ route('home') }}"><img src="{{ asset('img/logo/logostt-lightmode.png') }}"
-                                alt="Logo"></a>
-                    </div>
-                    <h1 class="auth-title">Verifikasi Email Anda</h1>
-                    <p class="auth-subtitle mb-0">Terima kasih sudah mendaftar.</p>
-                    <p class="auth-subtitle mb-5">Silakan klik link verifikasi yang telah kami kirimkan ke email Anda.
-                    </p>
-                    @if (session('status') === 'verification-link-sent')
-                        <div class="alert alert-success">
-                            Link verifikasi baru telah dikirim ke email Anda.
-                        </div>
-                    @endif
+    <x-auth.card title="Verifikasi Email"
+        subtitle="Terima kasih sudah mendaftar. Klik tautan verifikasi yang telah kami kirim ke email Anda.">
 
-                    <button wire:click="sendVerification" type="button" class="btn btn-primary">
-                        Kirim Ulang Email Verifikasi
-                    </button>
-
-                    <button wire:click="logout" type="button" class="btn btn-link">
-                        Logout
-                    </button>
-                </div>
+        @if (session('status') === 'verification-link-sent')
+            <div class="alert alert-success py-2 small">
+                Tautan verifikasi baru telah dikirim ke email Anda.
             </div>
-            <div class="col-lg-7 d-none d-lg-block">
-                <div id="auth-right">
+        @endif
 
-                </div>
-            </div>
-        </div>
+        <button wire:click="sendVerification" type="button" class="btn btn-primary w-100 py-2" wire:loading.attr="disabled"
+            wire:target="sendVerification">
+            <span wire:loading.remove wire:target="sendVerification">Kirim Ulang Email Verifikasi</span>
+            <span wire:loading wire:target="sendVerification">
+                <span class="spinner-border spinner-border-sm me-1"></span> Mengirim...
+            </span>
+        </button>
 
-    </div>
-
+        <x-slot:footer>
+            <button wire:click="logout" type="button" class="btn btn-link p-0">Keluar</button>
+        </x-slot:footer>
+    </x-auth.card>
 </div>

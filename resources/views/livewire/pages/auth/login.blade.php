@@ -25,67 +25,68 @@ new #[Layout('layouts.guest')] #[Title('Login')] class extends Component {
 }; ?>
 
 <div>
-    <div id="auth">
-        <div class="row h-100">
-            <div class="col-lg-5 col-12">
-                <div id="auth-left">
-                    <div class="auth-logo">
-                        <a href="{{ route('home') }}"><img src="{{ asset('img/logo/logostt-lightmode.png') }}"
-                                alt="Logo"></a>
-                    </div>
-                    <h3 class="auth-title">Selamat Datang!</h3>
-                    <p class="auth-subtitle">Masukan <i>email</i> dan <i>password</i> Anda.</p>
+    <x-auth.card title="Selamat Datang" subtitle="Masuk untuk melanjutkan ke sistem.">
 
-                    <form wire:submit="login">
-                        <div class="form-group position-relative has-icon-left mb-4">
-                            <input wire:model="form.email" id="email" name="email" type="email"
-                                class="form-control" placeholder="Email" required autofocus autocomplete="email">
-                            <div class="form-control-icon">
-                                <i class="bi bi-person"></i>
-                            </div>
-                            @error('form.email')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="form-group position-relative has-icon-left mb-4">
-                            <input wire:model="form.password" id="password" name="password" type="password"
-                                class="form-control" required placeholder="Password" autocomplete="current-password">
-                            <div class="form-control-icon">
-                                <i class="bi bi-shield-lock"></i>
-                            </div>
-                            @error('form.password')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
+        {{-- Pesan dari middleware (mis. akun dinonaktifkan) --}}
+        @error('email')
+            <div class="alert alert-danger py-2 small">{{ $message }}</div>
+        @enderror
 
-                        <div class="form-check form-check-lg d-flex align-items-end">
-                            <input wire:model="form.remember" class="form-check-input me-2" type="checkbox"
-                                id="remember" name="remember">
-                            <label class="form-check-label text-gray-600" for="remember">
-                                {{ __('Remember me') }}
-                            </label>
-                        </div>
-                        <button class="btn btn-primary btn-block shadow-lg mt-3">Masuk</button>
-                    </form>
-
-                    <div class="text-center mt-5 text-lg fs-5">
-                        <p class="text-gray-600 mb-3">{{ __('Belum punya akun?') }} <a href="{{ route('register') }}"
-                                class="font-bold fst-italic">
-                                Daftar sekarang</a></p>
-
-                        @if (Route::has('password.request'))
-                            <p><a class="font-bold fst-italic" href="{{ route('password.request') }}" wire:navigate>Lupa
-                                    password?</a></p>
-                        @endif
-                    </div>
+        <form wire:submit="login">
+            {{-- Email --}}
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input wire:model="form.email" id="email" type="email"
+                        class="form-control @error('form.email') is-invalid @enderror" placeholder="nama@email.com"
+                        required autofocus autocomplete="email">
                 </div>
+                @error('form.email')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
-            <div class="col-lg-7 d-none d-lg-block">
-                <div id="auth-right">
 
+            {{-- Password --}}
+            <div class="mb-3" x-data="{ show: false }">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input wire:model="form.password" id="password" type="password" :type="show ? 'text' : 'password'"
+                        class="form-control @error('form.password') is-invalid @enderror" placeholder="Password"
+                        required autocomplete="current-password">
+                    <button type="button" class="input-group-text auth-eye" x-on:click="show = !show" tabindex="-1"
+                        aria-label="Tampilkan atau sembunyikan password">
+                        <i class="bi" :class="show ? 'bi-eye-slash' : 'bi-eye'"></i>
+                    </button>
                 </div>
+                @error('form.password')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
-        </div>
 
-    </div>
+            {{-- Remember & lupa password --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check mb-0">
+                    <input wire:model="form.remember" class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">Ingat saya</label>
+                </div>
+
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" wire:navigate class="small">Lupa password?</a>
+                @endif
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2" wire:loading.attr="disabled" wire:target="login">
+                <span wire:loading.remove wire:target="login">Masuk</span>
+                <span wire:loading wire:target="login">
+                    <span class="spinner-border spinner-border-sm me-1"></span> Memproses...
+                </span>
+            </button>
+        </form>
+
+        <x-slot:footer>
+            Belum punya akun? <a href="{{ route('register') }}" wire:navigate>Daftar sekarang</a>
+        </x-slot:footer>
+    </x-auth.card>
 </div>
