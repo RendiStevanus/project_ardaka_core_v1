@@ -1,0 +1,169 @@
+/* ===== Warna brand (ubah di sini saja) ===== */
+:root {
+    --ardaka-blue: #1a56db;
+    --ardaka-blue-dark: #1e429f;
+    --ardaka-blue-soft: #dbe8ff;
+    --ardaka-blue-rgb: 26, 86, 219;
+}
+
+/* ===== Variabel Bootstrap ===== */
+:root,
+[data-bs-theme="light"],
+[data-bs-theme="dark"] {
+    --bs-primary: var(--ardaka-blue);
+    --bs-primary-rgb: var(--ardaka-blue-rgb);
+    --bs-link-color: var(--ardaka-blue);
+    --bs-link-color-rgb: var(--ardaka-blue-rgb);
+    --bs-link-hover-color: var(--ardaka-blue-dark);
+}
+
+/* ===== Tombol ===== */
+.btn-primary {
+    --bs-btn-bg: var(--ardaka-blue);
+    --bs-btn-border-color: var(--ardaka-blue);
+    --bs-btn-hover-bg: var(--ardaka-blue-dark);
+    --bs-btn-hover-border-color: var(--ardaka-blue-dark);
+    --bs-btn-active-bg: var(--ardaka-blue-dark);
+    --bs-btn-active-border-color: var(--ardaka-blue-dark);
+    --bs-btn-disabled-bg: var(--ardaka-blue);
+    --bs-btn-disabled-border-color: var(--ardaka-blue);
+    --bs-btn-focus-shadow-rgb: var(--ardaka-blue-rgb);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--ardaka-blue);
+    --bs-btn-border-color: var(--ardaka-blue);
+    --bs-btn-hover-bg: var(--ardaka-blue);
+    --bs-btn-hover-border-color: var(--ardaka-blue);
+    --bs-btn-active-bg: var(--ardaka-blue);
+    --bs-btn-active-border-color: var(--ardaka-blue);
+    --bs-btn-disabled-color: var(--ardaka-blue);
+    --bs-btn-disabled-border-color: var(--ardaka-blue);
+}
+
+/* ===== Form ===== */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ardaka-blue);
+    box-shadow: 0 0 0 0.2rem rgba(var(--ardaka-blue-rgb), 0.15);
+}
+
+.form-check-input:checked,
+.form-check-input[type="checkbox"]:indeterminate {
+    background-color: var(--ardaka-blue);
+    border-color: var(--ardaka-blue);
+}
+
+/* ===== Pagination, dropdown, nav, progress, list ===== */
+.pagination {
+    --bs-pagination-color: var(--ardaka-blue);
+    --bs-pagination-hover-color: var(--ardaka-blue-dark);
+    --bs-pagination-active-bg: var(--ardaka-blue);
+    --bs-pagination-active-border-color: var(--ardaka-blue);
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: var(--ardaka-blue);
+}
+.nav-pills {
+    --bs-nav-pills-link-active-bg: var(--ardaka-blue);
+}
+.progress {
+    --bs-progress-bar-bg: var(--ardaka-blue);
+}
+.list-group {
+    --bs-list-group-active-bg: var(--ardaka-blue);
+    --bs-list-group-active-border-color: var(--ardaka-blue);
+}
+
+/* ===== Sidebar Mazer ===== */
+.sidebar-wrapper .menu .sidebar-item.active > .sidebar-link {
+    background-color: var(--ardaka-blue);
+}
+
+.sidebar-wrapper .menu .submenu .submenu-item.active > a,
+.sidebar-wrapper .menu .submenu .submenu-item a:hover {
+    color: var(--ardaka-blue);
+}
+
+/* ===== Dark mode: warna brand ===== */
+html[data-bs-theme="dark"] {
+    --bs-primary: var(--ardaka-blue);
+    --bs-primary-rgb: var(--ardaka-blue-rgb);
+    --bs-link-color: #6d9bff;
+    --bs-link-hover-color: #9bbcff;
+}
+
+html[data-bs-theme="dark"] .btn-primary {
+    --bs-btn-bg: var(--ardaka-blue);
+    --bs-btn-border-color: var(--ardaka-blue);
+    --bs-btn-hover-bg: var(--ardaka-blue-dark);
+    --bs-btn-hover-border-color: var(--ardaka-blue-dark);
+    --bs-btn-active-bg: var(--ardaka-blue-dark);
+    --bs-btn-active-border-color: var(--ardaka-blue-dark);
+    --bs-btn-disabled-bg: var(--ardaka-blue);
+    --bs-btn-disabled-border-color: var(--ardaka-blue);
+    background-color: var(--ardaka-blue);
+    border-color: var(--ardaka-blue);
+}
+
+html[data-bs-theme="dark"] .btn-primary:hover,
+html[data-bs-theme="dark"] .btn-primary:active {
+    background-color: var(--ardaka-blue-dark);
+    border-color: var(--ardaka-blue-dark);
+}
+
+html[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: #6d9bff;
+    --bs-btn-border-color: var(--ardaka-blue);
+    --bs-btn-hover-bg: var(--ardaka-blue);
+    --bs-btn-hover-border-color: var(--ardaka-blue);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--ardaka-blue);
+    --bs-btn-active-border-color: var(--ardaka-blue);
+}
+
+html[data-bs-theme="dark"] .form-control:focus,
+html[data-bs-theme="dark"] .form-select:focus {
+    border-color: var(--ardaka-blue);
+    box-shadow: 0 0 0 0.2rem rgba(var(--ardaka-blue-rgb), 0.35);
+}
+
+html[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: var(--ardaka-blue);
+    border-color: var(--ardaka-blue);
+}
+
+html[data-bs-theme="dark"] .pagination {
+    --bs-pagination-color: #6d9bff;
+    --bs-pagination-hover-color: #9bbcff;
+    --bs-pagination-active-bg: var(--ardaka-blue);
+    --bs-pagination-active-border-color: var(--ardaka-blue);
+}
+
+html[data-bs-theme="dark"]
+    .sidebar-wrapper
+    .menu
+    .sidebar-item.active
+    > .sidebar-link {
+    background-color: var(--ardaka-blue);
+}
+
+html[data-bs-theme="dark"]
+    .sidebar-wrapper
+    .menu
+    .submenu
+    .submenu-item.active
+    > a,
+html[data-bs-theme="dark"]
+    .sidebar-wrapper
+    .menu
+    .submenu
+    .submenu-item
+    a:hover {
+    color: #6d9bff;
+}
+
+html[data-bs-theme="dark"] .text-primary {
+    color: #6d9bff !important;
+}

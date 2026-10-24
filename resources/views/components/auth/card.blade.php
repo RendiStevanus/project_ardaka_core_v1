@@ -5,10 +5,6 @@
     <div class="auth-page">
         <style>
             .auth-page {
-                --ardaka-blue: #1a56db;
-                --ardaka-blue-dark: #1e429f;
-                --ardaka-blue-soft: #dbe8ff;
-
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;

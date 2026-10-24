@@ -14,7 +14,7 @@
 
     @include('layouts.partials.style')
     @livewireStyles
-
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
 
 <body>
@@ -58,7 +58,7 @@
                     showCancelButton: true,
                     confirmButtonText: 'Ya, hapus',
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#435ebe',
+                    confirmButtonColor: '#1a56db',
                     cancelButtonColor: '#dc3545',
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -83,7 +83,7 @@
                     showCancelButton: true,
                     confirmButtonText: confirmText ?? 'Ya, lanjutkan',
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#435ebe',
+                    confirmButtonColor: '#1a56db',
                     cancelButtonColor: '#dc3545',
                 }).then((result) => {
                     if (result.isConfirmed) {
