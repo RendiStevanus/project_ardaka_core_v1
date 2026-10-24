@@ -34,42 +34,84 @@ class Index extends Component
 
     public $search = '';
 
-    public $roles = [];
-
     public $name = '';
 
     public $email = '';
 
     public $role = '';
 
+    /* ---------- Helper ---------- */
 
-    public $deleteId = '';
-    public function mount()
+    private function assignableRoles()
     {
-        $this->roles = Role::orderBy('name')->get();
+        return Role::query()
+            ->when(
+                ! Auth::user()->hasRole('super-admin'),
+                fn($query) => $query->where('name', '!=', 'super-admin')
+            )
+            ->orderBy('name');
     }
+
+    private function denied(string $ability): bool
+    {
+        if (Gate::denies($ability)) {
+            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function canManage(User $target): bool
+    {
+        if ($target->hasRole('super-admin') && ! Auth::user()->hasRole('super-admin')) {
+            $this->error('Hanya Super Admin yang dapat mengelola akun Super Admin.');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isLastActiveSuperAdmin(User $user): bool
+    {
+        return $user->is_active
+            && $user->hasRole('super-admin')
+            && User::role('super-admin')->where('is_active', true)->count() <= 1;
+    }
+
     public function resetInputFields()
     {
         $this->reset(['name', 'email', 'role', 'user_id']);
         $this->resetValidation();
     }
 
+    /* ---------- Tambah & edit ---------- */
+
     public function create()
     {
+        if ($this->denied('create_user')) {
+            return;
+        }
+
         $this->resetInputFields();
         $this->dispatch('openModal', id: 'userModal');
     }
 
     public function edit($id)
     {
-        if (Gate::denies('update_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+        if ($this->denied('update_user')) {
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        if (! $this->canManage($user)) {
             return;
         }
 
         $this->resetInputFields();
-
-        $user = User::findOrFail($id);
 
         $this->user_id = $user->id;
         $this->name    = $user->name;
@@ -81,8 +123,7 @@ class Index extends Component
 
     public function save()
     {
-        if (Gate::denies($this->user_id ? 'update_user' : 'create_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+        if ($this->denied($this->user_id ? 'update_user' : 'create_user')) {
             return;
         }
 
@@ -90,7 +131,7 @@ class Index extends Component
             [
                 'name'  => 'required',
                 'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user_id)],
-                'role'  => 'required',
+                'role'  => ['required', Rule::in($this->assignableRoles()->pluck('name')->all())],
             ],
             [
                 'name.required'  => 'Nama wajib diisi.',
@@ -98,22 +139,28 @@ class Index extends Component
                 'email.email'    => 'Email tidak valid.',
                 'email.unique'   => 'Email sudah digunakan.',
                 'role.required'  => 'Role wajib diisi.',
+                'role.in'        => 'Role tidak valid.',
             ]
         );
 
         if ($this->user_id) {
             $user = User::findOrFail($this->user_id);
 
-            if (
-                $user->hasRole('super-admin')
-                && $this->role !== 'super-admin'
-                && User::role('super-admin')->count() <= 1
-            ) {
-                $this->addError('role', 'Role Super Admin terakhir tidak dapat diubah.');
+            if (! $this->canManage($user)) {
                 return;
             }
 
             $oldRole = $user->getRoleNames()->first();
+
+            if ($user->id === Auth::id() && $this->role !== $oldRole) {
+                $this->addError('role', 'Anda tidak dapat mengubah role Anda sendiri.');
+                return;
+            }
+
+            if ($this->role !== 'super-admin' && $this->isLastActiveSuperAdmin($user)) {
+                $this->addError('role', 'Role Super Admin terakhir tidak dapat diubah.');
+                return;
+            }
 
             DB::transaction(function () use ($user) {
                 $user->update([
@@ -136,9 +183,9 @@ class Index extends Component
         } else {
             $user = DB::transaction(function () {
                 $user = User::create([
-                    'name'     => $this->name,
-                    'email'    => $this->email,
-                    'password' => Hash::make('password'),
+                    'name'              => $this->name,
+                    'email'             => $this->email,
+                    'password'          => Hash::make('password'),
                     'email_verified_at' => now(),
                 ]);
 
@@ -162,14 +209,19 @@ class Index extends Component
         $this->success($message);
     }
 
+    /* ---------- Aktif / nonaktif ---------- */
     public function confirmToggle($id)
     {
-        if (Gate::denies('update_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+        if ($this->denied('update_user')) {
             return;
         }
 
-        $user   = User::findOrFail($id);
+        $user = User::findOrFail($id);
+
+        if (! $this->canManage($user)) {
+            return;
+        }
+
         $action = $user->is_active ? 'Nonaktifkan' : 'Aktifkan';
 
         $this->dispatch(
@@ -186,23 +238,22 @@ class Index extends Component
 
     public function toggleActive($id)
     {
-        if (Gate::denies('update_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
+        if ($this->denied('update_user')) {
             return;
         }
 
         $user = User::findOrFail($id);
+
+        if (! $this->canManage($user)) {
+            return;
+        }
 
         if ($user->id === Auth::id()) {
             $this->error('Anda tidak dapat menonaktifkan akun Anda sendiri.');
             return;
         }
 
-        if (
-            $user->is_active
-            && $user->hasRole('super-admin')
-            && User::role('super-admin')->where('is_active', true)->count() <= 1
-        ) {
+        if ($this->isLastActiveSuperAdmin($user)) {
             $this->error('Super Admin aktif terakhir tidak dapat dinonaktifkan.');
             return;
         }
@@ -212,9 +263,68 @@ class Index extends Component
         $this->success($user->is_active ? 'User berhasil diaktifkan.' : 'User berhasil dinonaktifkan.');
     }
 
+    /* ---------- Hapus ---------- */
+
+    public function confirmDelete($id)
+    {
+        if ($this->denied('delete_user')) {
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        if (! $this->canManage($user)) {
+            return;
+        }
+
+        $this->dispatch(
+            'confirmDelete',
+            id: $user->id,
+            component: $this->getId(),
+            html: '<b>' . e($user->name) . '</b><br><small>' . e($user->email) . '</small>',
+        );
+    }
+
+    public function destroy($id)
+    {
+        if ($this->denied('delete_user')) {
+            return;
+        }
+
+        $user = User::findOrFail($id);
+
+        if (! $this->canManage($user)) {
+            return;
+        }
+
+        if ($user->id === Auth::id()) {
+            $this->error('Anda tidak dapat menghapus akun Anda sendiri.');
+            return;
+        }
+
+        if ($this->isLastActiveSuperAdmin($user)) {
+            $this->error('Super Admin aktif terakhir tidak dapat dihapus.');
+            return;
+        }
+
+        $user->delete();
+
+        $this->success('User berhasil dihapus.');
+    }
+
+    public function goToTrashed()
+    {
+        Gate::authorize('restore_user');
+
+        return $this->redirectRoute('users.trashed');
+    }
+
+    /* ---------- Render ---------- */
+
     public function render()
     {
-        $data = [
+        return view('livewire.user-management.user.index', [
+            'roles' => $this->assignableRoles()->get(),
             'users' => User::select('users.*')
                 ->leftJoin('model_has_roles', function ($join) {
                     $join->on('users.id', '=', 'model_has_roles.model_id')
@@ -240,57 +350,6 @@ class Index extends Component
                 ->orderBy('users.name')
                 ->paginate($this->paginate)
                 ->withQueryString(),
-
-        ];
-
-        return view('livewire.user-management.user.index', $data);
-    }
-
-    public function confirmDelete($id)
-    {
-        if (Gate::denies('delete_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
-            return;
-        }
-
-        $user = User::findOrFail($id);
-
-        $this->dispatch(
-            'confirmDelete',
-            id: $user->id,
-            component: $this->getId(),
-            html: '<b>' . e($user->name) . '</b><br><small>' . e($user->email) . '</small>',
-        );
-    }
-
-    public function destroy($id)
-    {
-        if (Gate::denies('delete_user')) {
-            $this->error('Anda tidak memiliki akses untuk aksi ini.');
-            return;
-        }
-
-        $user = User::findOrFail($id);
-
-        if ($user->id === Auth::id()) {
-            $this->error('Anda tidak dapat menghapus akun Anda sendiri.');
-            return;
-        }
-
-        if ($user->hasRole('super-admin') && User::role('super-admin')->count() <= 1) {
-            $this->error('Super Admin terakhir tidak dapat dihapus.');
-            return;
-        }
-
-        $user->delete();
-
-        $this->success('User berhasil dihapus.');
-    }
-
-    public function goToTrashed()
-    {
-        Gate::authorize('restore_user');
-
-        return $this->redirectRoute('users.trashed');
+        ]);
     }
 }
